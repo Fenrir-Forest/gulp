@@ -79,7 +79,7 @@ gulp.task('componentes', function () {
 		.pipe(gulp.dest(produccion.dist));
 })
 
-// Comprimiendo SASS -      .pipe(watch(proyecto.sass))
+// Comprimiendo SASS
 gulp.task('sass', function () {
 	return gulp.src(proyecto.sass)
 		.pipe(sass())
