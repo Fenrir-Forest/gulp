@@ -21,22 +21,23 @@
 
 // Variables de librerias
 var gulp = require('gulp'), // Lp
-	rename = require('gulp-rename'),
-	concat = require('gulp-concat'),
-	usemin = require('gulp-usemin'),
 	autoprefixer = require('gulp-autoprefixer'),
-    browserSync = require('browser-sync'),
-	watch = require('gulp-watch'),
-	sass = require('gulp-sass'),
+	concat = require('gulp-concat'),
 	jade = require('gulp-jade'),
-	uglify = require('gulp-uglify'),
 	minifyCss= require('gulp-minify-css'),
+	rename = require('gulp-rename'),
+	sass = require('gulp-sass'),
+	uglify = require('gulp-uglify'),
+	usemin = require('gulp-usemin'),
+	watch = require('gulp-watch'),
+	browserSync = require('browser-sync'),
 	reload = browserSync.reload;
 
 // Directorios del proyecto
 var proyecto = {
 	imagenes: './src/img/**/*.*',
-	fuentes: './src/components/**/*.{ttf,woff,eof,svg}',
+	componentes: './src/components/**',
+	fuentes: './src/fuentes/**/*.{ttf,woff,eof,svg}',
 	sass: './src/scss/*.scss',
 	js: './src/js/**/*.js',
 	raiz: './src/jade/*.jade',
@@ -60,7 +61,7 @@ gulp.task('img', function () {
 		.pipe(gulp.dest(produccion.imagenes));
 })
 
-// static assets
+// Fuentes
 gulp.task('fuentes', function () {
 	return gulp.src(proyecto.fuentes)
 		.pipe(rename({
@@ -69,7 +70,16 @@ gulp.task('fuentes', function () {
 		.pipe(gulp.dest(produccion.librerias));
 });
 
-// Comprimiendo SASS - 		.pipe(watch(proyecto.sass))
+// static assets
+gulp.task('componentes', function () {
+	return gulp.src(proyecto.componentes)
+		.pipe(rename({
+			dirname: '/components'
+		}))
+		.pipe(gulp.dest(produccion.dist));
+})
+
+// Comprimiendo SASS -      .pipe(watch(proyecto.sass))
 gulp.task('sass', function () {
 	return gulp.src(proyecto.sass)
 		.pipe(sass())
@@ -113,6 +123,7 @@ gulp.task('usemin', function () {
 })
 
 gulp.task('watch', function () {
+	gulp.watch([proyecto.componentes], ['componentes'], reload({stream:true}));
 	gulp.watch([proyecto.sass], ['sass'], reload({stream:true}));
 	gulp.watch([proyecto.raiz, proyecto.templ], ['raiz', 'templ'], reload({stream:true}));
 	gulp.watch([proyecto.imagenes], ['img'], reload({stream:true}));
@@ -120,17 +131,17 @@ gulp.task('watch', function () {
 })
 
 gulp.task('server', function() {
-    browserSync({
-        //logConnections: false,
-        //logFileChanges: false,
-        notify: true,
-        open: false,
-        server: {
-            baseDir: produccion.dist
-        }
-    });
+	browserSync({
+		//logConnections: false,
+		//logFileChanges: false,
+		notify: true,
+		open: false,
+		server: {
+			baseDir: produccion.dist
+		}
+	});
 });
 
-gulp.task('build-custom', ['img', 'fuentes', 'sass', 'js', 'raiz', 'templ']);
+gulp.task('build-custom', ['img', 'componentes', 'fuentes', 'sass', 'js', 'raiz', 'templ']);
 gulp.task('build', ['usemin', 'build-custom'])
 gulp.task('default', ['build', 'watch']);
