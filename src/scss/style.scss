@@ -1,0 +1,41 @@
+@import "fonts/_fonts.scss";
+
+@mixin long-shadow($numero,$color) {
+	$box-shadow: 1px 1px #{$color};
+	$i: 2;
+	@while $i <= $numero {
+		$box-shadow: '#{$box-shadow}, 
+		#{$i}px #{$i}px #{$color}';
+    $i: $i + 1;
+	};
+	box-shadow: unquote($box-shadow);
+}
+
+$Principal: #0080EE;
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Oswald;
+    background: lighten($Principal,5%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.long-shadow {
+	//border-radius: 100%;
+	border: 1px solid darken($Principal,10%);
+	width: 250px;
+	height: 250px;
+	background: rgba(#000,.1);
+	font-size: 3em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	color: rgba(#fff, .8);
+	text-decoration: none;
+	@include long-shadow(500, darken($Principal,10%));
+}

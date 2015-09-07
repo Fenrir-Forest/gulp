@@ -1,0 +1,7 @@
+{
+	"analytics": true,
+	"color": true,
+	"directory" : "src/components",
+	"strict-ssh": false,
+	"timeout": 40000
+}
