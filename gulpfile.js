@@ -1,14 +1,37 @@
 
+// Copyright (c) 2015 The Forest (Sander Pacheco Hernández)
+
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 // Variables de librerias
 var gulp = require('gulp'), // Lp
 	rename = require('gulp-rename'),
 	concat = require('gulp-concat'),
 	usemin = require('gulp-usemin'),
+	autoprefixer = require('gulp-autoprefixer'),
+    browserSync = require('browser-sync'),
 	watch = require('gulp-watch'),
 	sass = require('gulp-sass'),
 	jade = require('gulp-jade'),
 	uglify = require('gulp-uglify'),
-	minifyCss= require('gulp-minify-css');
+	minifyCss= require('gulp-minify-css'),
+	reload = browserSync.reload;
 
 // Directorios del proyecto
 var proyecto = {
@@ -50,6 +73,7 @@ gulp.task('fuentes', function () {
 gulp.task('sass', function () {
 	return gulp.src(proyecto.sass)
 		.pipe(sass())
+		.pipe(autoprefixer('> 5%'))
 		.pipe(concat('main.min.css'))
 		.pipe(gulp.dest(produccion.estilos));
 });
@@ -88,11 +112,25 @@ gulp.task('usemin', function () {
 		.pipe(gulp.dest(produccion.dist));
 })
 
-gulp.task('watch', ['fuentes'], function () {
-	gulp.watch([proyecto.sass], ['sass']);
-	gulp.watch([proyecto.raiz, proyecto.templ], ['raiz', 'templ']);
-	gulp.watch([proyecto.imagenes], ['img']);
-	gulp.watch([proyecto.js], ['js']);
+gulp.task('watch', function () {
+	gulp.watch([proyecto.sass], ['sass'], reload({stream:true}));
+	gulp.watch([proyecto.raiz, proyecto.templ], ['raiz', 'templ'], reload({stream:true}));
+	gulp.watch([proyecto.imagenes], ['img'], reload({stream:true}));
+	gulp.watch([proyecto.js], ['js'], reload({stream:true}));
 })
 
-gulp.task('default', ['sass']);
+gulp.task('server', function() {
+    browserSync({
+        //logConnections: false,
+        //logFileChanges: false,
+        notify: true,
+        open: false,
+        server: {
+            baseDir: produccion.dist
+        }
+    });
+});
+
+gulp.task('build-custom', ['img', 'fuentes', 'sass', 'js', 'raiz', 'templ']);
+gulp.task('build', ['usemin', 'build-custom'])
+gulp.task('default', ['build', 'watch']);

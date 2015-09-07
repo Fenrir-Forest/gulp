@@ -1,1 +1,4 @@
-# gulp
+# Comandos
+
+- `gulp`
+- `gulp server`
